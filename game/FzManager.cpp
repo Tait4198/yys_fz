@@ -1,4 +1,4 @@
-﻿#include "FzManager.h"
+#include "FzManager.h"
 #include "GameUtil.h"
 #include <filesystem>
 #include <fstream>
@@ -13,11 +13,32 @@ FzManager::FzManager() {
     system("chcp 65001");
     // CpMap初始化要先于clientMap
     this->initCpMap();
+    this->ocrLite = new OcrLite(4);
+    this->ocrLite->initLogger(true, false, true);
+    this->ocrLite->initModels("./models");
+
+    // 客户端必须最后初始化
     this->updateClients();
 }
 
 FzManager::~FzManager() {
-    printf("清理客户端:%d", this->cleanClients(true));
+    this->cleanClients(true);
+    delete this->ocrLite;
+}
+
+void callback(string &message, bool accept, GameClient *client) {
+    CompareLocation cl = client->getCompareLocation("modal_01");
+    if (cl.valid) {
+        cv::Mat ocrMat = getScreenshotMat(client->getHwnd(), cl.x, cl.y, cl.w, cl.h);
+        std::vector<TextBlock> tbs = client->getOcrLite()->detect(ocrMat);
+        stringstream ss;
+        for (auto &tb : tbs) {
+            ss << tb.text;
+        }
+        if (ss.str().find(message) != string::npos) {
+            printf("Modal Message %s\n", ss.str().c_str());
+        }
+    }
 }
 
 int FzManager::updateClients() {
@@ -27,9 +48,10 @@ int FzManager::updateClients() {
         stringstream ss;
         ss << "0x" << hwnd;
         if (!this->clientMap.count(ss.str())) {
-            this->clientMap[ss.str()] = new GameClient(hwnd, ss.str(), &this->cpMap);
+            this->clientMap[ss.str()] = new GameClient(hwnd, ss.str(), &this->cpMap, this->ocrLite);
 //            this->clientMap[ss.str()]->backToHome();
 //            this->clientMap[ss.str()]->execTask();
+            this->clientMap[ss.str()]->checkModal("确认退出组队面板吗", true, &callback);
             newHwnd++;
         }
     }
@@ -73,7 +95,7 @@ void FzManager::initCpMap() {
     stringstream ss;
     ss << getExePath() << "\\cp_json";
     if (!dirExists(ss.str())) {
-        cout << "cp_json 目录不存在" << endl;
+        printf("cp_json 目录不存在\n");
         return;
     }
     Json::CharReaderBuilder b;

@@ -80,34 +80,22 @@ cv::Mat makePadding(cv::Mat &src, const int padding) {
 }
 
 
-void OcrLite::detect(cv::Mat& srcMat) {
+std::vector<TextBlock> OcrLite::detect(cv::Mat& srcMat) {
     cv::Mat rgbMat;
     cvtColor(srcMat, rgbMat, cv::COLOR_BGR2RGB);
     ScaleParam scale = getScaleParam(rgbMat, (std::max)(rgbMat.cols, rgbMat.rows));
     std::vector<TextBox> textBoxes = dbNet.getTextBoxes(rgbMat, scale, 0.6, 0.3, 3, 2.0);
     std::vector<cv::Mat> partImages = getPartImages(rgbMat, textBoxes, nullptr, nullptr);
     std::vector<TextLine> textLines = crnnNet.getTextLines(partImages, nullptr, nullptr);
+
+    std::vector<TextBlock> textBlocks;
     for (int i = 0; i < textLines.size(); ++i) {
-        Logger("textLine[%d](%s)\n", i, textLines[i].text.c_str());
+        TextBlock textBlock{textBoxes[i].boxPoint, textBoxes[i].score, 0, 0,
+                            0, textLines[i].text, textLines[i].charScores, textLines[i].time,
+                            0 + textLines[i].time};
+        textBlocks.emplace_back(textBlock);
     }
-
-    /*
-    for (int i = 0; i < textBoxes.size(); ++i) {
-        Logger("TextBox[%d][score(%f),[x: %d, y: %d], [x: %d, y: %d], [x: %d, y: %d], [x: %d, y: %d]]\n", i,
-            textBoxes[i].score,
-            textBoxes[i].boxPoint[0].x, textBoxes[i].boxPoint[0].y,
-            textBoxes[i].boxPoint[1].x, textBoxes[i].boxPoint[1].y,
-            textBoxes[i].boxPoint[2].x, textBoxes[i].boxPoint[2].y,
-            textBoxes[i].boxPoint[3].x, textBoxes[i].boxPoint[3].y);
-    }
-
-    cv::Mat drawMat = rgbMat.clone();
-    cv::Mat textBoxMat;
-    int thickness = getThickness(rgbMat);
-    drawTextBoxes(drawMat, textBoxes, thickness);
-    cvtColor(drawMat, textBoxMat, cv::COLOR_RGB2BGR);
-    cv::imshow("Draw", textBoxMat);
-    */
+    return textBlocks;
 }
 
 OcrResult OcrLite::detect(const char *path, const char *imgName,

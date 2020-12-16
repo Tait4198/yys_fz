@@ -23,7 +23,7 @@ public:
 
     void Logger(const char *format, ...);
 
-    void detect(cv::Mat&);
+    std::vector<TextBlock> detect(cv::Mat&);
 
     OcrResult detect(const char *path, const char *imgName,
                      int padding, int imgResize,

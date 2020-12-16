@@ -8,6 +8,7 @@
 #include <string>
 #include "GameClient.h"
 #include "GameCommon.h"
+#include "../ocr/OcrLite.h"
 
 class FzManager {
 public:
@@ -29,6 +30,7 @@ public:
 private:
     std::map<std::string, GameClient*> clientMap;
     std::map<std::string, GameCompare> cpMap;
+    OcrLite* ocrLite;
 
     void initCpMap();
 
