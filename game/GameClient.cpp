@@ -8,13 +8,13 @@
 
 using namespace std;
 
-
 GameClient::GameClient(HWND hwnd, string hexHwnd, std::map<std::string, GameCompare> *cpMapPtr, OcrLite *ocrLite) {
     this->hwnd = hwnd;
     this->hexHwnd = std::move(hexHwnd);
     this->cpMapPtr = cpMapPtr;
     this->ocrLite = ocrLite;
     this->currentPosition = -1;
+    this->currentTaskId = -1;
     this->initClientSize();
 }
 
@@ -80,8 +80,7 @@ void GameClient::threadFunc() {
 
 
 bool GameClient::backToHome() {
-    if (inCompareValid(this->cpMapPtr->operator[]("home_not_expanded"), true)
-        || inCompareValid(this->cpMapPtr->operator[]("home_expanded"), true)) {
+    if (onTheHome()) {
         printf("[%s]已在首页\n", this->hexHwnd.c_str());
         return true;
     }
@@ -94,13 +93,15 @@ bool GameClient::backToHome() {
                 GameCompare cp = iter.second;
                 if (inCompareValid(cp, true)) {
                     rangeMouseLbClick(this->hwnd, cp.x, cp.y, cp.x + cp.w, cp.y + cp.h);
+                    this_thread::sleep_for(chrono::seconds(1));
+                    checkModal(true, nullptr);
                     wait = true;
                     break;
                 }
             }
         }
         if (wait) {
-            this_thread::sleep_for(chrono::seconds(4));
+            this_thread::sleep_for(chrono::seconds(2));
             if (onTheHome()) {
                 printf("[%s]已返回首页\n", this->hexHwnd.c_str());
                 return true;
@@ -123,13 +124,13 @@ bool GameClient::onTheHome() {
            inCompareValid(this->cpMapPtr->operator[]("buff_01"), true);
 }
 
-void GameClient::checkModal(std::string &&message, bool accept,
-                            void(*CheckModalCallback)(std::string &, bool, GameClient *)) {
+void GameClient::checkModal(bool accept, void(*checkModalCallback)(bool, GameClient *)) {
     CompareResult aCr = compare("accept_02");
     CompareResult rCr = compare("refuse_02");
-    string iMessage = forward<string>(message);
     if (aCr.pv <= aCr.r && rCr.pv <= rCr.r) {
-        CheckModalCallback(iMessage, accept, this);
+        if (checkModalCallback != nullptr) {
+            checkModalCallback(accept, this);
+        }
         if (accept) {
             rangeMouseLbClick(this->hwnd, aCr.x, aCr.y, aCr.x + aCr.w, aCr.y + aCr.h);
         } else {

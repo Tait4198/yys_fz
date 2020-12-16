@@ -20,7 +20,7 @@ public:
 
     CompareResult compare(std::string &&cpName, bool missPosition);
 
-    void checkModal(std::string &&message, bool accept, void(*CheckModalCallback)(std::string &, bool, GameClient *));
+    void checkModal(bool accept, void(*CheckModalCallback)(bool, GameClient *));
 
     bool backToHome();
 

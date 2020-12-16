@@ -26,20 +26,6 @@ FzManager::~FzManager() {
     delete this->ocrLite;
 }
 
-void callback(string &message, bool accept, GameClient *client) {
-    CompareLocation cl = client->getCompareLocation("modal_01");
-    if (cl.valid) {
-        cv::Mat ocrMat = getScreenshotMat(client->getHwnd(), cl.x, cl.y, cl.w, cl.h);
-        std::vector<TextBlock> tbs = client->getOcrLite()->detect(ocrMat);
-        stringstream ss;
-        for (auto &tb : tbs) {
-            ss << tb.text;
-        }
-        if (ss.str().find(message) != string::npos) {
-            printf("Modal Message %s\n", ss.str().c_str());
-        }
-    }
-}
 
 int FzManager::updateClients() {
     vector<HWND> hwnds = findYysHwnds();
@@ -49,9 +35,9 @@ int FzManager::updateClients() {
         ss << "0x" << hwnd;
         if (!this->clientMap.count(ss.str())) {
             this->clientMap[ss.str()] = new GameClient(hwnd, ss.str(), &this->cpMap, this->ocrLite);
-//            this->clientMap[ss.str()]->backToHome();
+            this->clientMap[ss.str()]->backToHome();
 //            this->clientMap[ss.str()]->execTask();
-            this->clientMap[ss.str()]->checkModal("确认退出组队面板吗", true, &callback);
+//            this->clientMap[ss.str()]->checkModal(true, &callback);
             newHwnd++;
         }
     }
