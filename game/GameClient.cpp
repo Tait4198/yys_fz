@@ -68,7 +68,7 @@ bool GameClient::inCompareValid(GameCompare &cp, bool missPosition) {
 }
 
 void GameClient::threadFunc() {
-    GameTask *gt = taskManager->newTask("Common");
+    GameTask *gt = taskManager->newTask("Common", "{}");
     while (true) {
         for (int i = 0; i < 60; i++) {
             printf("Exec %d\n", i);

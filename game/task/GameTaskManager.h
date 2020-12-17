@@ -3,10 +3,11 @@
 
 #include "GameTask.h"
 #include "CommonTask.h"
+#include "YuHunTask.h"
 #include <map>
 #include <string>
 
-typedef std::function<GameTask*()> TaskCreateFuncType;
+typedef std::function<GameTask *(const std::string &)> TaskCreateFuncType;
 
 class GameTaskManager {
 public:
@@ -14,7 +15,7 @@ public:
 
     ~GameTaskManager();
 
-    GameTask* newTask(std::string&&);
+    GameTask *newTask(std::string &&, const std::string &configJsonStr);
 
 private:
     std::map<std::string, TaskCreateFuncType> createTaskMap;

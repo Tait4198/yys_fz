@@ -4,7 +4,7 @@
 
 class GameTask {
 public:
-    virtual void exec(GameClient *client, std::string configJson) = 0;
+    virtual void exec(GameClient *client, std::vector<int>& otherClientTaskIds) = 0;
 
     virtual int getGroupTaskId() = 0;
 

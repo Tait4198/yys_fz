@@ -6,10 +6,12 @@ class CommonTask : public GameTask {
 public:
     void offerAReward(GameClient *client, bool accept);
 
-public:
-    static GameTask *createInstance();
+    CommonTask(const std::string& configJsonStr);
 
-    void exec(GameClient *client, std::string configJson) override;
+public:
+    static GameTask *createInstance(std::string configJsonStr);
+
+    void exec(GameClient *client, std::vector<int>& otherClientTaskIds) override;
 
     ~CommonTask() override;
 

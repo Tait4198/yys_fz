@@ -1,7 +1,9 @@
 #include "CommonTask.h"
+
+#include <utility>
 #include "../GameUtil.h"
 
-void CommonTask::exec(GameClient *client, std::string configJson) {
+void CommonTask::exec(GameClient *client, std::vector<int>& otherClientTaskIds) {
     this->offerAReward(client, false);
 }
 
@@ -30,8 +32,12 @@ int CommonTask::getGroupTaskId() {
     return -1;
 }
 
-GameTask *CommonTask::createInstance() {
-    return new CommonTask;
+GameTask *CommonTask::createInstance(std::string configJsonStr) {
+    return new CommonTask(std::move(configJsonStr));
+}
+
+CommonTask::CommonTask(const std::string& configJsonStr) {
+
 }
 
 CommonTask::~CommonTask() = default;
