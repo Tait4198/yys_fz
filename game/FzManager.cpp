@@ -10,8 +10,8 @@ FzManager fzManager;
 
 FzManager::FzManager() {
     system("chcp 65001");
-    // CpMap初始化要先于clientMap
-    this->initCpMap();
+    this->jsonConvert = new JsonConvert;
+
     this->ocrLite = new OcrLite(4);
     this->ocrLite->initLogger(true, false, true);
     this->ocrLite->initModels("./models");
@@ -19,6 +19,8 @@ FzManager::FzManager() {
     this->gameTaskManager = new GameTaskManager;
     this->groupManager = new GroupManager;
 
+    // CpMap初始化要先于clientMap
+    this->initCpMap();
     // 客户端必须最后初始化
     this->updateClients();
 }
@@ -37,7 +39,7 @@ int FzManager::updateClients() {
         ss << "0x" << hwnd;
         if (!this->clientMap.count(ss.str())) {
             this->clientMap[ss.str()] = new GameClient(hwnd, ss.str(), &this->cpMap, this->ocrLite,
-                                                       this->gameTaskManager, this->groupManager);
+                                                       this->jsonConvert, this->gameTaskManager, this->groupManager);
             this->clientMap[ss.str()]->backToHome();
 //            this->clientMap[ss.str()]->execTask();
 //            this->clientMap[ss.str()]->checkModal(true, &callback);
@@ -87,16 +89,13 @@ void FzManager::initCpMap() {
         printf("cp_json 目录不存在\n");
         return;
     }
-    Json::CharReaderBuilder b;
-    Json::CharReader *reader(b.newCharReader());
+
     for (const auto &entry : fs::directory_iterator(ss.str())) {
         if (entry.path().extension() == ".json") {
             ifstream ifs(entry.path());
             string jsonStr((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
             Json::Value cpJson;
-            JSONCPP_STRING errs;
-            bool success = reader->parse(jsonStr.c_str(), jsonStr.c_str() + strlen(jsonStr.c_str()), &cpJson, &errs);
-            if (success && errs.empty()) {
+            if (this->jsonConvert->convert(jsonStr, &cpJson)) {
                 string filename = entry.path().filename().string();
                 string cpName = filename.substr(0, filename.find_last_of('.'));
                 int r = cpJson["r"].asInt();
@@ -112,7 +111,6 @@ void FzManager::initCpMap() {
             }
         }
     }
-    delete reader;
 }
 
 int FzManager::cleanClients(bool cleanAll) {
@@ -126,3 +124,8 @@ int FzManager::cleanClients(bool cleanAll) {
     }
     return cleanCount;
 }
+
+bool FzManager::execTasks(const std::string &hexHwnd, const std::string &tasksJsonStr) {
+    return false;
+}
+

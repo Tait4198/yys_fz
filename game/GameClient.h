@@ -7,8 +7,13 @@
 
 class GameClient {
 public:
-    GameClient(HWND, std::string, std::map<std::string, GameCompare> *, OcrLite *,
-               GameTaskManager *, GroupManager *);
+    struct GameTaskParam {
+        std::string configJson;
+        std::string taskName;
+    };
+
+    GameClient(HWND, std::string, std::map<std::string, GameCompare> *,
+               OcrLite *, JsonConvert *, GameTaskManager *, GroupManager *);
 
     ~GameClient();
 
@@ -24,7 +29,7 @@ public:
 
     bool backToHome();
 
-    void execTask();
+    void execTask(const std::string &configJson);
 
     OcrLite *getOcrLite();
 
@@ -39,6 +44,7 @@ private:
     OcrLite *ocrLite;
     GameTaskManager *taskManager;
     GroupManager *groupManager;
+    JsonConvert *jsonConvert;
 
     int currentPosition;
     int currentTaskId;
@@ -52,6 +58,6 @@ private:
 
     bool onTheHome();
 
-    void threadFunc();
+    void taskFunc(std::vector<GameTaskParam> &);
 };
 

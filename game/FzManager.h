@@ -18,6 +18,8 @@ public:
 
     HWND getHwndByHexHwnd(std::string &&hexHwnd);
 
+    bool execTasks(const std::string &hexHwnd, const std::string &tasksJsonStr);
+
     CompareResult compare(HWND &hwnd, std::string &&cpName);
 
     CompareResult compare(std::string &&hexHwnd, std::string &&cpName);
@@ -27,7 +29,8 @@ private:
     std::map<std::string, GameCompare> cpMap;
     OcrLite *ocrLite;
     GameTaskManager *gameTaskManager;
-    GroupManager* groupManager;
+    GroupManager *groupManager;
+    JsonConvert* jsonConvert;
 
     void initCpMap();
 

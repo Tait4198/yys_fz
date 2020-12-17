@@ -2,8 +2,6 @@
 #define YYS_FZ_GAMETASKMANAGER_H
 
 #include "GameTask.h"
-#include "CommonTask.h"
-#include "YuHunTask.h"
 #include <map>
 #include <string>
 

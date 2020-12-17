@@ -8,11 +8,13 @@
 using namespace std;
 
 GameClient::GameClient(HWND hwnd, string hexHwnd, std::map<std::string, GameCompare> *cpMapPtr,
-                       OcrLite *ocrLite, GameTaskManager *taskManager, GroupManager *groupManager) {
+                       OcrLite *ocrLite, JsonConvert *jsonConvert, GameTaskManager *taskManager,
+                       GroupManager *groupManager) {
     this->hwnd = hwnd;
     this->hexHwnd = std::move(hexHwnd);
     this->cpMapPtr = cpMapPtr;
     this->ocrLite = ocrLite;
+    this->jsonConvert = jsonConvert;
     this->taskManager = taskManager;
     this->groupManager = groupManager;
     this->currentPosition = -1;
@@ -67,7 +69,7 @@ bool GameClient::inCompareValid(GameCompare &cp, bool missPosition) {
     return cpv <= cp.r;
 }
 
-void GameClient::threadFunc() {
+void GameClient::taskFunc(std::vector<GameTaskParam> &gameTaskParams) {
     GameTask *gt = taskManager->newTask("Common", "{}");
     while (true) {
         for (int i = 0; i < 60; i++) {
@@ -115,9 +117,13 @@ bool GameClient::backToHome() {
     return false;
 }
 
-void GameClient::execTask() {
-    thread t1(&GameClient::threadFunc, this);
-    t1.detach();
+void GameClient::execTask(const std::string &configJson) {
+    Json::Value jsonValue;
+    if (this->jsonConvert->convert(configJson, &jsonValue)) {
+
+        thread t1(&GameClient::taskFunc, this);
+        t1.detach();
+    }
 }
 
 bool GameClient::onTheHome() {

@@ -8,6 +8,7 @@
 #include "GameUtil.h"
 #include "GroupManager.h"
 #include "task/GameTaskManager.h"
+#include "../common/JsonConvert.h"
 
 struct GameCompare {
     int x;

@@ -2,21 +2,21 @@
 // Created by 2020/12/17.
 //
 
-#ifndef YYS_FZ_YUHUNTASK_H
-#define YYS_FZ_YUHUNTASK_H
+#ifndef YYS_FZ_ACCEPTBATTLETASK_H
+#define YYS_FZ_ACCEPTBATTLETASK_H
 
 #include "BaseGameTask.h"
 
-class YuHunTask : public BaseGameTask {
+class AcceptBattleTask : public BaseGameTask {
 public:
-    explicit YuHunTask(const std::string &configJsonStr);
+    explicit AcceptBattleTask(const std::string &configJsonStr);
 
 public:
     static GameTask *createInstance(const std::string &configJsonStr);
 
     void exec(GameClient *client, std::vector<int> &otherClientTaskIds) override;
 
-    ~YuHunTask() override;
+    ~AcceptBattleTask() override;
 
     int getTaskId() override;
 
@@ -24,10 +24,9 @@ public:
 
 private:
     bool enterLoop;
-    int battleCount{};
 
     void initConfigCallback(Json::Value *configJson);
 };
 
 
-#endif //YYS_FZ_YUHUNTASK_H
+#endif //YYS_FZ_ACCEPTBATTLETASK_H
