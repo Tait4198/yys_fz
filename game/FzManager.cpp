@@ -1,5 +1,4 @@
 #include "FzManager.h"
-#include "GameUtil.h"
 #include <filesystem>
 #include <fstream>
 #include <json/json.h>
@@ -16,6 +15,9 @@ FzManager::FzManager() {
     this->ocrLite = new OcrLite(4);
     this->ocrLite->initLogger(true, false, true);
     this->ocrLite->initModels("./models");
+
+    this->gameTaskManager = new GameTaskManager;
+    this->groupManager = new GroupManager;
 
     // 客户端必须最后初始化
     this->updateClients();
@@ -34,7 +36,8 @@ int FzManager::updateClients() {
         stringstream ss;
         ss << "0x" << hwnd;
         if (!this->clientMap.count(ss.str())) {
-            this->clientMap[ss.str()] = new GameClient(hwnd, ss.str(), &this->cpMap, this->ocrLite);
+            this->clientMap[ss.str()] = new GameClient(hwnd, ss.str(), &this->cpMap, this->ocrLite,
+                                                       this->gameTaskManager, this->groupManager);
             this->clientMap[ss.str()]->backToHome();
 //            this->clientMap[ss.str()]->execTask();
 //            this->clientMap[ss.str()]->checkModal(true, &callback);

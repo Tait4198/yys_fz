@@ -2,19 +2,19 @@
 
 #include "Windows.h"
 #include "windef.h"
-#include <map>
-#include <string>
 #include "GameCommon.h"
 #include "../ocr/OcrLite.h"
 
-
 class GameClient {
 public:
-    GameClient(HWND hwnd, std::string hexHwnd, std::map<std::string, GameCompare> *cpMapPtr, OcrLite *ocrLite);
+    GameClient(HWND, std::string, std::map<std::string, GameCompare> *, OcrLite *,
+               GameTaskManager *, GroupManager *);
 
     ~GameClient();
 
     HWND getHwnd();
+
+    std::string getHexHwnd();
 
     CompareResult compare(std::string &&cpName);
 
@@ -28,6 +28,8 @@ public:
 
     OcrLite *getOcrLite();
 
+    int getCurrentTaskId() const;
+
     CompareLocation getCompareLocation(std::string &&cpName);
 
 private:
@@ -35,6 +37,8 @@ private:
     std::string hexHwnd;
     std::map<std::string, GameCompare> *cpMapPtr;
     OcrLite *ocrLite;
+    GameTaskManager *taskManager;
+    GroupManager *groupManager;
 
     int currentPosition;
     int currentTaskId;

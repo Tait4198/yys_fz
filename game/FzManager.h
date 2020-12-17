@@ -2,11 +2,6 @@
 
 #include "Windows.h"
 #include "windef.h"
-#include <vector>
-#include <map>
-#include <set>
-#include <string>
-#include "GameClient.h"
 #include "GameCommon.h"
 #include "../ocr/OcrLite.h"
 
@@ -28,9 +23,11 @@ public:
     CompareResult compare(std::string &&hexHwnd, std::string &&cpName);
 
 private:
-    std::map<std::string, GameClient*> clientMap;
+    std::map<std::string, GameClient *> clientMap;
     std::map<std::string, GameCompare> cpMap;
-    OcrLite* ocrLite;
+    OcrLite *ocrLite;
+    GameTaskManager *gameTaskManager;
+    GroupManager* groupManager;
 
     void initCpMap();
 

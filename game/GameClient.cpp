@@ -4,15 +4,17 @@
 #include <thread>
 #include <chrono>
 #include <utility>
-#include "AllGameTask.h"
 
 using namespace std;
 
-GameClient::GameClient(HWND hwnd, string hexHwnd, std::map<std::string, GameCompare> *cpMapPtr, OcrLite *ocrLite) {
+GameClient::GameClient(HWND hwnd, string hexHwnd, std::map<std::string, GameCompare> *cpMapPtr,
+                       OcrLite *ocrLite, GameTaskManager *taskManager, GroupManager *groupManager) {
     this->hwnd = hwnd;
     this->hexHwnd = std::move(hexHwnd);
     this->cpMapPtr = cpMapPtr;
     this->ocrLite = ocrLite;
+    this->taskManager = taskManager;
+    this->groupManager = groupManager;
     this->currentPosition = -1;
     this->currentTaskId = -1;
     this->initClientSize();
@@ -66,7 +68,7 @@ bool GameClient::inCompareValid(GameCompare &cp, bool missPosition) {
 }
 
 void GameClient::threadFunc() {
-    GameTask *gt = new CommonTask;
+    GameTask *gt = taskManager->newTask("Common");
     while (true) {
         for (int i = 0; i < 60; i++) {
             printf("Exec %d\n", i);
@@ -150,4 +152,12 @@ CompareLocation GameClient::getCompareLocation(string &&cpName) {
     }
     GameCompare cp = this->cpMapPtr->operator[](iCpName);
     return CompareLocation{cp.x, cp.y, cp.w, cp.h, true};
+}
+
+std::string GameClient::getHexHwnd() {
+    return this->hexHwnd;
+}
+
+int GameClient::getCurrentTaskId() const {
+    return this->currentTaskId;
 }

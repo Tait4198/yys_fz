@@ -1,7 +1,13 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <map>
 #include <set>
+#include "GameClient.h"
+#include "GameUtil.h"
+#include "GroupManager.h"
+#include "task/GameTaskManager.h"
 
 struct GameCompare {
     int x;
