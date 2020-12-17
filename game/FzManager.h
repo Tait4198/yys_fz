@@ -3,7 +3,11 @@
 #include "Windows.h"
 #include "windef.h"
 #include "GameCommon.h"
-#include "../ocr/OcrLite.h"
+#include "GameClient.h"
+#include "CompareManager.h"
+#include "GroupManager.h"
+#include "../common/JsonConvert.h"
+#include "task/GameTaskManager.h"
 
 class FzManager {
 public:
@@ -14,7 +18,7 @@ public:
 
     int updateClients();
 
-    std::vector<std::string> getHexHwnds();
+    std::vector<std::string> getHexHwndList();
 
     HWND getHwndByHexHwnd(std::string &&hexHwnd);
 
@@ -26,13 +30,14 @@ public:
 
 private:
     std::map<std::string, GameClient *> clientMap;
-    std::map<std::string, GameCompare> cpMap;
-    OcrLite *ocrLite;
     GameTaskManager *gameTaskManager;
     GroupManager *groupManager;
-    JsonConvert* jsonConvert;
-
-    void initCpMap();
+    JsonConvert *jsonConvert;
+    CompareManager *compareManager;
 
     int cleanClients(bool cleanAll);
+
+    std::vector<GameTask::GameTaskParam> convertTaskParam(const std::string &tasksJsonStr);
+
+    void taskFunc(GameClient *client, std::vector<GameTask::GameTaskParam> &gameTaskParams);
 };

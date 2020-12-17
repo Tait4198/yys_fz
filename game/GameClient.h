@@ -2,18 +2,14 @@
 
 #include "Windows.h"
 #include "windef.h"
-#include "GameCommon.h"
-#include "../ocr/OcrLite.h"
+#include "string"
+#include "atomic"
 
 class GameClient {
 public:
-    struct GameTaskParam {
-        std::string configJson;
-        std::string taskName;
-    };
 
-    GameClient(HWND, std::string, std::map<std::string, GameCompare> *,
-               OcrLite *, JsonConvert *, GameTaskManager *, GroupManager *);
+
+    GameClient(HWND hwnd, std::string);
 
     ~GameClient();
 
@@ -21,43 +17,30 @@ public:
 
     std::string getHexHwnd();
 
-    CompareResult compare(std::string &&cpName);
+    [[nodiscard]] int getCurrentTaskId() const;
 
-    CompareResult compare(std::string &&cpName, bool missPosition);
+    void setCurrentTaskId(int taskId);
 
-    void checkModal(bool accept, void(*CheckModalCallback)(bool, GameClient *));
+    [[nodiscard]] int getCurrentPosition() const;
 
-    bool backToHome();
+    void setCurrentPosition(int position);
 
-    void execTask(const std::string &configJson);
+    [[nodiscard]] std::string getCurrentGroup() const;
 
-    OcrLite *getOcrLite();
+    void setCurrentGroup(std::string newGroup);
 
-    int getCurrentTaskId() const;
+    bool isRun();
 
-    CompareLocation getCompareLocation(std::string &&cpName);
-
+    void setRun(bool status);
 private:
     HWND hwnd;
     std::string hexHwnd;
-    std::map<std::string, GameCompare> *cpMapPtr;
-    OcrLite *ocrLite;
-    GameTaskManager *taskManager;
-    GroupManager *groupManager;
-    JsonConvert *jsonConvert;
+    std::atomic<bool> run;
 
     int currentPosition;
     int currentTaskId;
     std::string group;
 
     void initClientSize();
-
-    CompareResult inCompare(GameCompare &cp, bool missPosition);
-
-    bool inCompareValid(GameCompare &cp, bool missPosition);
-
-    bool onTheHome();
-
-    void taskFunc(std::vector<GameTaskParam> &);
 };
 

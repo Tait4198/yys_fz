@@ -1,19 +1,25 @@
-//
-// Created by 2020/12/17.
-//
-
 #include "YuHunTask.h"
 
-GameTask *YuHunTask::createInstance(const std::string &configJsonStr) {
-    return new YuHunTask(configJsonStr);
+YuHunTask::YuHunTask(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager)
+        : BaseGameTask(client, compareManager) {
+    YuHunTask::initConfig(configJsonStr, [this](auto &&PH1) {
+        initConfigCallback(std::forward<decltype(PH1)>(PH1));
+    });
+    this->enterLoop = false;
 }
 
-void YuHunTask::exec(GameClient *client, std::vector<int> &otherClientTaskIds) {
+GameTask *
+YuHunTask::createInstance(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager) {
+    return new YuHunTask(configJsonStr, client, compareManager);
+}
+
+bool YuHunTask::exec(std::vector<int> &otherClientTaskIds) {
     if (this->enterLoop) {
 
     } else {
 
     }
+    return true;
 }
 
 void YuHunTask::initConfigCallback(Json::Value *configJson) {
@@ -28,13 +34,6 @@ int YuHunTask::getTaskId() {
 
 int YuHunTask::getGroupTaskId() {
     return 0;
-}
-
-YuHunTask::YuHunTask(const std::string &configJsonStr) {
-    YuHunTask::initConfig(configJsonStr, [this](auto &&PH1) {
-        initConfigCallback(std::forward<decltype(PH1)>(PH1));
-    });
-    this->enterLoop = false;
 }
 
 

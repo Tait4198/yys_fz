@@ -1,7 +1,3 @@
-//
-// Created by 2020/12/17.
-//
-
 #ifndef YYS_FZ_ACCEPTBATTLETASK_H
 #define YYS_FZ_ACCEPTBATTLETASK_H
 
@@ -9,12 +5,13 @@
 
 class AcceptBattleTask : public BaseGameTask {
 public:
-    explicit AcceptBattleTask(const std::string &configJsonStr);
+    AcceptBattleTask(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
 
 public:
-    static GameTask *createInstance(const std::string &configJsonStr);
+    static GameTask *
+    createInstance(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
 
-    void exec(GameClient *client, std::vector<int> &otherClientTaskIds) override;
+    bool exec(std::vector<int> &otherClientTaskIds) override;
 
     ~AcceptBattleTask() override;
 
@@ -24,6 +21,7 @@ public:
 
 private:
     bool enterLoop;
+    bool otherClientReady;
 
     void initConfigCallback(Json::Value *configJson);
 };

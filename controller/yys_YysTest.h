@@ -12,17 +12,17 @@ namespace yys {
             //METHOD_ADD(YysTest::your_method_name,"/{1}/{2}/list",Get);//path is /yys/YysTest/{arg1}/{arg2}/list
             //ADD_METHOD_TO(YysTest::your_method_name,"/absolute/path/{1}/{2}/list",Get);//path is /absolute/path/{arg1}/{arg2}/list
 
-            METHOD_ADD(getYysHwnds, "/hwnds", Get);
-            METHOD_ADD(getScrennshot, "/img/{1}", Get);
+            METHOD_ADD(getYysHwndList, "/hwnds", Get);
+            METHOD_ADD(getScreenshot, "/img/{1}", Get);
         METHOD_LIST_END
 
     public:
         // your declaration of processing function maybe like this:
         // void get(const HttpRequestPtr& req,std::function<void (const HttpResponsePtr &)> &&callback,int p1,std::string p2);
         // void your_method_name(const HttpRequestPtr& req,std::function<void (const HttpResponsePtr &)> &&callback,double p1,int p2) const;
-        void getYysHwnds(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+        void getYysHwndList(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
-        void getScrennshot(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
+        void getScreenshot(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
                            std::string &&hexHwnd);
     };
 }

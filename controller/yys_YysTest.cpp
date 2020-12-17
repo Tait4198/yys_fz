@@ -18,16 +18,16 @@ Json::Value iterable2json(Iterable const& cont) {
 	return v;
 }
 
-void yys::YysTest::getYysHwnds(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
+void yys::YysTest::getYysHwndList(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
 	Json::Value result;
-	vector<string> hexHwnds = fzManager.getHexHwnds();
-	Json::Value hexHwndsJson = iterable2json(hexHwnds);
-	result["hexHwnds"] = hexHwndsJson;
+	vector<string> hexHwndList = fzManager.getHexHwndList();
+	Json::Value hexHwndListJson = iterable2json(hexHwndList);
+	result["hexHwndList"] = hexHwndListJson;
 	auto resp = HttpResponse::newHttpJsonResponse(result);
 	callback(resp);
 }
 
-void yys::YysTest::getScrennshot(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback, std::string&& hexHwnd) {
+void yys::YysTest::getScreenshot(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback, std::string&& hexHwnd) {
 	HWND hwnd = fzManager.getHwndByHexHwnd(move(hexHwnd));
 	auto resp = HttpResponse::newHttpResponse();
 	if (IsWindow(hwnd)) {

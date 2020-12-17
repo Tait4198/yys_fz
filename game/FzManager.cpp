@@ -1,48 +1,40 @@
 #include "FzManager.h"
-#include <filesystem>
-#include <fstream>
 #include <json/json.h>
+#include <chrono>
 
 using namespace std;
-namespace fs = filesystem;
 
 FzManager fzManager;
 
 FzManager::FzManager() {
     system("chcp 65001");
     this->jsonConvert = new JsonConvert;
-
-    this->ocrLite = new OcrLite(4);
-    this->ocrLite->initLogger(true, false, true);
-    this->ocrLite->initModels("./models");
-
+    this->compareManager = new CompareManager(this->jsonConvert);
     this->gameTaskManager = new GameTaskManager;
     this->groupManager = new GroupManager;
 
-    // CpMap初始化要先于clientMap
-    this->initCpMap();
     // 客户端必须最后初始化
     this->updateClients();
 }
 
 FzManager::~FzManager() {
     this->cleanClients(true);
-    delete this->ocrLite;
+    delete this->jsonConvert;
+    delete this->compareManager;
+    delete this->gameTaskManager;
+    delete this->groupManager;
 }
 
 
 int FzManager::updateClients() {
-    vector<HWND> hwnds = findYysHwnds();
+    vector<HWND> hwndList = findYysHwnds();
     int newHwnd = -this->cleanClients(false);
-    for (auto &hwnd : hwnds) {
+    for (auto &hwnd : hwndList) {
         stringstream ss;
         ss << "0x" << hwnd;
         if (!this->clientMap.count(ss.str())) {
-            this->clientMap[ss.str()] = new GameClient(hwnd, ss.str(), &this->cpMap, this->ocrLite,
-                                                       this->jsonConvert, this->gameTaskManager, this->groupManager);
-            this->clientMap[ss.str()]->backToHome();
-//            this->clientMap[ss.str()]->execTask();
-//            this->clientMap[ss.str()]->checkModal(true, &callback);
+            this->clientMap[ss.str()] = new GameClient(hwnd, ss.str());
+            this->compareManager->backToHome(hwnd, ss.str());
             newHwnd++;
         }
     }
@@ -57,60 +49,81 @@ HWND FzManager::getHwndByHexHwnd(string &&hexHwnd) {
 }
 
 CompareResult FzManager::compare(HWND &hwnd, std::string &&cpName) {
-    stringstream ss;
-    ss << "0x" << hwnd;
-    if (this->clientMap.count(ss.str())) {
-        return this->clientMap[ss.str()]->compare(move(cpName));
-    }
-    return CompareResult{0, 0, 0, 0, 0, -1, ""};
+    return this->compareManager->compare(hwnd, -1, move(cpName));
 }
 
 CompareResult FzManager::compare(std::string &&hexHwnd, std::string &&cpName) {
     std::string iHexHwnd = forward<std::string>(hexHwnd);
     if (this->clientMap.count(iHexHwnd)) {
-        return this->clientMap[iHexHwnd]->compare(move(cpName));
+        GameClient *client = this->clientMap[iHexHwnd];
+        return this->compareManager->compare(client->getHwnd(), client->getCurrentPosition(), move(cpName));
     }
     return CompareResult{0, 0, 0, 0, 0, -1, ""};
 }
 
-vector<string> FzManager::getHexHwnds() {
-    vector<string> hwnds;
+vector<string> FzManager::getHexHwndList() {
+    vector<string> hwndList;
     for (auto &iter : this->clientMap) {
-        hwnds.push_back(iter.first);
+        hwndList.push_back(iter.first);
     }
-    return hwnds;
+    return hwndList;
 }
 
-
-void FzManager::initCpMap() {
-    stringstream ss;
-    ss << getExePath() << "\\cp_json";
-    if (!dirExists(ss.str())) {
-        printf("cp_json 目录不存在\n");
-        return;
+bool FzManager::execTasks(const std::string &hexHwnd, const std::string &tasksJsonStr) {
+    if (this->clientMap.count(hexHwnd)) {
+        GameClient *client = this->clientMap[hexHwnd];
+        if (client->isRun()) {
+            return false;
+        }
+        client->setRun(true);
+        std::vector<GameTask::GameTaskParam> params = convertTaskParam(tasksJsonStr);
+        thread th(&FzManager::taskFunc, this, client, params);
+        th.detach();
+        return true;
     }
+    return false;
+}
 
-    for (const auto &entry : fs::directory_iterator(ss.str())) {
-        if (entry.path().extension() == ".json") {
-            ifstream ifs(entry.path());
-            string jsonStr((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
-            Json::Value cpJson;
-            if (this->jsonConvert->convert(jsonStr, &cpJson)) {
-                string filename = entry.path().filename().string();
-                string cpName = filename.substr(0, filename.find_last_of('.'));
-                int r = cpJson["r"].asInt();
-                std::set<int> pSet;
-                int size = cpJson["position"].size();
-                for (int i = 0; i < size; i++) {
-                    pSet.insert(cpJson["position"][i].asInt());
-                }
-                this->cpMap[cpName] = GameCompare{cpJson["x"].asInt(), cpJson["y"].asInt(), cpJson["w"].asInt(),
-                                                  cpJson["h"].asInt(),
-                                                  pSet, r ? r : 3, cpJson["hash"].asString(),
-                                                  cpJson["name"].asString()};
-            }
+std::vector<GameTask::GameTaskParam> FzManager::convertTaskParam(const std::string &tasksJsonStr) {
+    Json::Value jsonValue;
+    std::vector<GameTask::GameTaskParam> taskParams;
+    if (this->jsonConvert->convert(tasksJsonStr, &jsonValue)) {
+        Json::StreamWriterBuilder builder;
+        builder.settings_["indentation"] = "";
+        for (auto &item : jsonValue) {
+            taskParams.push_back(GameTask::GameTaskParam{
+                    Json::writeString(builder, item["config"]),
+                    item["taskName"].asString(),
+                    item["order"].asInt()
+            });
+        }
+        std::sort(taskParams.begin(), taskParams.end());
+        for (auto &taskParam : taskParams) {
+            printf("Task -> %d %s\n", taskParam.order, taskParam.taskName.c_str());
         }
     }
+    return taskParams;
+}
+
+void FzManager::taskFunc(GameClient *client, std::vector<GameTask::GameTaskParam> &gameTaskParams) {
+    GameTask *commonTask = this->gameTaskManager->newTask("Common", "{}", client, this->compareManager);
+    for (auto &gtp : gameTaskParams) {
+        GameTask *task = this->gameTaskManager->newTask(move(gtp.taskName), gtp.configJson, client,
+                                                        this->compareManager);
+        if (task != nullptr) {
+            std::vector<int> taskIds;
+            for (int i = 0; i < 30; i++) {
+                commonTask->exec(taskIds);
+                task->exec(taskIds);
+                this_thread::sleep_for(chrono::seconds(1));
+            }
+            delete task;
+        } else {
+            printf("invalid task %s\n", gtp.taskName.c_str());
+        }
+    }
+    delete commonTask;
+    client->setRun(false);
 }
 
 int FzManager::cleanClients(bool cleanAll) {
@@ -124,8 +137,3 @@ int FzManager::cleanClients(bool cleanAll) {
     }
     return cleanCount;
 }
-
-bool FzManager::execTasks(const std::string &hexHwnd, const std::string &tasksJsonStr) {
-    return false;
-}
-

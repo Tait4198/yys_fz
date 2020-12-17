@@ -15,10 +15,11 @@ void GameTaskManager::registerTask() {
     this->createTaskMap["AcceptBattle"] = AcceptBattleTask::createInstance;
 }
 
-GameTask *GameTaskManager::newTask(std::string &&taskName, const std::string &configJsonStr) {
-    std::string inTaskName = std::forward<std::string>(taskName);
-    if (this->createTaskMap.count(inTaskName)) {
-        return this->createTaskMap[inTaskName](configJsonStr);
+GameTask *GameTaskManager::newTask(std::string &&taskName, const std::string &configJsonStr,
+                                   GameClient *client, CompareManager *compareManager) {
+    std::string iTaskName = std::forward<std::string>(taskName);
+    if (this->createTaskMap.count(iTaskName)) {
+        return this->createTaskMap[iTaskName](configJsonStr, client, compareManager);
     }
     return nullptr;
 }

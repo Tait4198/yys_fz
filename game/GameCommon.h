@@ -4,11 +4,8 @@
 #include <vector>
 #include <map>
 #include <set>
-#include "GameClient.h"
+#include <sstream>
 #include "GameUtil.h"
-#include "GroupManager.h"
-#include "task/GameTaskManager.h"
-#include "../common/JsonConvert.h"
 
 struct GameCompare {
     int x;

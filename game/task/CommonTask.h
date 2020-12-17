@@ -4,14 +4,15 @@
 
 class CommonTask : public GameTask {
 public:
-    void offerAReward(GameClient *client, bool accept);
+    void offerAReward(bool accept);
 
-    explicit CommonTask(const std::string &configJsonStr);
+    explicit CommonTask(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
 
 public:
-    static GameTask *createInstance(std::string configJsonStr);
+    static GameTask *
+    createInstance(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
 
-    void exec(GameClient *client, std::vector<int> &otherClientTaskIds) override;
+    bool exec(std::vector<int> &otherClientTaskIds) override;
 
     ~CommonTask() override;
 

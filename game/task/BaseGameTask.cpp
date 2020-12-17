@@ -1,7 +1,3 @@
-//
-// Created by 2020/12/17.
-//
-
 #include "BaseGameTask.h"
 
 void BaseGameTask::initConfig(const std::string &configJsonStr, const std::function<void(Json::Value *)> &callback) {
@@ -17,4 +13,7 @@ void BaseGameTask::initConfig(const std::string &configJsonStr, const std::funct
         printf("task init fail");
     }
     delete reader;
+}
+
+BaseGameTask::BaseGameTask(GameClient *client, CompareManager *compareManager) : GameTask(client, compareManager) {
 }

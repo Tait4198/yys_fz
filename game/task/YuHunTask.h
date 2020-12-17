@@ -1,7 +1,3 @@
-//
-// Created by 2020/12/17.
-//
-
 #ifndef YYS_FZ_YUHUNTASK_H
 #define YYS_FZ_YUHUNTASK_H
 
@@ -9,12 +5,12 @@
 
 class YuHunTask : public BaseGameTask {
 public:
-    explicit YuHunTask(const std::string &configJsonStr);
+    explicit YuHunTask(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
 
 public:
-    static GameTask *createInstance(const std::string &configJsonStr);
+    static GameTask *createInstance(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
 
-    void exec(GameClient *client, std::vector<int> &otherClientTaskIds) override;
+    bool exec(std::vector<int> &otherClientTaskIds) override;
 
     ~YuHunTask() override;
 

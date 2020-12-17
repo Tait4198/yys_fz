@@ -1,8 +1,6 @@
 #include "GroupManager.h"
 
-#include <utility>
-
-std::vector<int> GroupManager::getTaskIdByGroup(const std::string &hwndHex) {
+std::vector<int> GroupManager::getTaskIdByHexHwnd(const std::string &hwndHex) {
     std::vector<int> taskIds;
     if (this->clientMap.count(hwndHex)) {
         std::string groupName = this->clientMap[hwndHex].groupName;

@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 
-typedef std::function<GameTask *(const std::string &)> TaskCreateFuncType;
+typedef std::function<GameTask *(const std::string &, GameClient *, CompareManager *)> TaskCreateFuncType;
 
 class GameTaskManager {
 public:
@@ -13,7 +13,7 @@ public:
 
     ~GameTaskManager();
 
-    GameTask *newTask(std::string &&, const std::string &configJsonStr);
+    GameTask *newTask(std::string &&, const std::string &, GameClient *client, CompareManager *);
 
 private:
     std::map<std::string, TaskCreateFuncType> createTaskMap;
