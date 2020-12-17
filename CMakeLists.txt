@@ -32,5 +32,6 @@ file(GLOB_RECURSE OCR ${PROJECT_SOURCE_DIR}/ocr/*.cpp ${PROJECT_SOURCE_DIR}/ocr/
 file(GLOB_RECURSE COMMON ${PROJECT_SOURCE_DIR}/common/*.cpp ${PROJECT_SOURCE_DIR}/common/*.h)
 file(GLOB_RECURSE GAME ${PROJECT_SOURCE_DIR}/game/*.cpp ${PROJECT_SOURCE_DIR}/game/*.h)
 file(GLOB_RECURSE CONTROLLER ${PROJECT_SOURCE_DIR}/controller/*.cpp ${PROJECT_SOURCE_DIR}/controller/*.h)
+file(GLOB_RECURSE TASK ${PROJECT_SOURCE_DIR}/game/task/*.cpp ${PROJECT_SOURCE_DIR}/game/task/*.h)
 
-add_executable(yys_fz main.cpp ${OCR} ${COMMON} ${GAME} ${CONTROLLER} game/ClientManager.cpp game/ClientManager.h main.cpp main.cpp)
+add_executable(yys_fz main.cpp ${OCR} ${COMMON} ${GAME} ${CONTROLLER} ${TASK})

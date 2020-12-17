@@ -7,7 +7,7 @@ public:
     void offerAReward(GameClient *client, bool accept);
 
 public:
-    static GameTask* createInstance();
+    static GameTask *createInstance();
 
     void exec(GameClient *client, std::string configJson) override;
 

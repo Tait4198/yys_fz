@@ -4,8 +4,6 @@
 
 class GameTask {
 public:
-    static GameTask* createInstance();
-
     virtual void exec(GameClient *client, std::string configJson) = 0;
 
     virtual int getGroupTaskId() = 0;
