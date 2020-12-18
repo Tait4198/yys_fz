@@ -10,6 +10,8 @@ public:
     BaseGameTask(GameClient *client, CompareManager *compareManager);
 protected:
     static void initConfig(const std::string& configJsonStr, const std::function<void(Json::Value*)>& callback);
+
+    bool openBuff(std::vector<int>& buff);
 };
 
 

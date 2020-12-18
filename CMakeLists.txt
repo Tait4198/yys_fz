@@ -3,18 +3,20 @@ project(yys_fz)
 
 set(CMAKE_CXX_STANDARD 17)
 
-message($ENV{LIB_PATH})
-message($ENV{VCPKG_PATH})
+#message($ENV{LIB_PATH})
+#message($ENV{VCPKG_PATH})
 
-include_directories("$ENV{LIB_PATH}/opencv_vc16/include")
-include_directories("$ENV{LIB_PATH}/onnxruntime/include")
-include_directories("$ENV{LIB_PATH}/drogon/include")
-include_directories("$ENV{VCPKG_PATH}/include")
+include_directories("/Users/chenyitao/临时/ocr/opencv-3.4.12/include")
+include_directories("/Users/chenyitao/临时/ocr/onnxruntime-osx-x64-1.5.2/onnxruntime/include")
+#include_directories("$ENV{LIB_PATH}/drogon/include")
+#include_directories("$ENV{VCPKG_PATH}/include")
+include_directories("/usr/local/include")
 
-link_directories("$ENV{LIB_PATH}/opencv_vc16/x64/vc16/lib")
-link_directories("$ENV{LIB_PATH}/onnxruntime/lib")
-link_directories("$ENV{LIB_PATH}/drogon/lib")
-link_directories("$ENV{VCPKG_PATH}/lib")
+link_directories("/Users/chenyitao/临时/ocr/opencv-3.4.12/include/lib")
+link_directories("/Users/chenyitao/临时/ocr/onnxruntime-osx-x64-1.5.2/onnxruntime/lib")
+#link_directories("$ENV{LIB_PATH}/drogon/lib")
+#link_directories("$ENV{VCPKG_PATH}/lib")
+link_directories("/usr/local/lib")
 
 link_libraries(onnxruntime.lib
         opencv_core450.lib

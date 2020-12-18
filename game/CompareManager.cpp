@@ -79,6 +79,16 @@ bool CompareManager::compareValid(HWND hwnd, int currentPosition, GameCompare &c
     return cpv <= cp.r;
 }
 
+bool CompareManager::compareValid(HWND hwnd, int currentPosition, std::string &&cpName) {
+    std::string iCpName = std::forward<std::string>(cpName);
+    if (this->cpMap.count(iCpName) == 0) {
+        printf("无效CpName -> %s\n", iCpName.c_str());
+        return false;
+    }
+    GameCompare cp = this->cpMap[iCpName];
+    return this->compareValid(hwnd, currentPosition, cp);
+}
+
 CompareResult CompareManager::compare(HWND hwnd, int currentPosition, std::string &&cpName) {
     std::string iCpName = std::forward<std::string>(cpName);
     if (this->cpMap.count(iCpName) == 0) {
@@ -94,7 +104,7 @@ OcrLite *CompareManager::getOcrLite() {
 }
 
 bool CompareManager::backToHome(HWND &hwnd, const std::string &clientName) {
-    if (onTheHome(hwnd)) {
+    if (checkMain(hwnd)) {
         printf("[%s]已在首页\n", clientName.c_str());
         return true;
     }
@@ -116,7 +126,7 @@ bool CompareManager::backToHome(HWND &hwnd, const std::string &clientName) {
         }
         if (wait) {
             std::this_thread::sleep_for(std::chrono::seconds(2));
-            if (onTheHome(hwnd)) {
+            if (checkMain(hwnd)) {
                 printf("[%s]已返回首页\n", clientName.c_str());
                 return true;
             }
@@ -127,14 +137,14 @@ bool CompareManager::backToHome(HWND &hwnd, const std::string &clientName) {
     return false;
 }
 
-bool CompareManager::onTheHome(HWND &hwnd) {
+bool CompareManager::checkMain(HWND &hwnd) {
     return (compareValid(hwnd, -1, cpMap["home_not_expanded"]) ||
             compareValid(hwnd, -1, cpMap["home_expanded"])) &&
            compareValid(hwnd, -1, cpMap["buff_01"]);
 }
 
 void CompareManager::checkModal(HWND &hwnd, bool accept,
-                                const std::function<bool(HWND &, bool, CompareManager *)> &callback) {
+                                const std::function<bool(HWND & , bool, CompareManager * )> &callback) {
     CompareResult aCr = compare(hwnd, -1, "accept_02");
     CompareResult rCr = compare(hwnd, -1, "refuse_02");
     if (aCr.pv <= aCr.r && rCr.pv <= rCr.r) {

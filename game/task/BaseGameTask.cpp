@@ -17,3 +17,7 @@ void BaseGameTask::initConfig(const std::string &configJsonStr, const std::funct
 
 BaseGameTask::BaseGameTask(GameClient *client, CompareManager *compareManager) : GameTask(client, compareManager) {
 }
+
+bool BaseGameTask::openBuff(std::vector<int> &buff) {
+
+}

@@ -23,11 +23,13 @@ public:
 
     CompareResult compare(HWND hwnd, int currentPosition, std::string &&cpName);
 
+    bool compareValid(HWND hwnd, int currentPosition, std::string &&cpName);
+
     OcrLite *getOcrLite();
 
     bool backToHome(HWND &hwnd, const std::string &clientName);
 
-    bool onTheHome(HWND &hwnd);
+    bool checkMain(HWND &hwnd);
 
     void checkModal(HWND &hwnd, bool accept, const std::function<bool(HWND &, bool, CompareManager *)> &callback);
 

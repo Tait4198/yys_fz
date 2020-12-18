@@ -8,7 +8,8 @@ public:
     explicit YuHunTask(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
 
 public:
-    static GameTask *createInstance(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
+    static GameTask *
+    createInstance(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
 
     bool exec(std::vector<int> &otherClientTaskIds) override;
 
@@ -19,10 +20,17 @@ public:
     int getGroupTaskId() override;
 
 private:
+    bool init;
     bool enterLoop;
+
+    std::vector<int> buff;
     int battleCount{};
 
     void initConfigCallback(Json::Value *configJson);
+
+    bool initSingleBattle();
+
+    bool initGroupBattle();
 };
 
 

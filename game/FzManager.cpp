@@ -1,6 +1,7 @@
 #include "FzManager.h"
 #include <json/json.h>
 #include <chrono>
+#include <thread>
 
 using namespace std;
 
@@ -76,15 +77,15 @@ bool FzManager::execTasks(const std::string &hexHwnd, const std::string &tasksJs
             return false;
         }
         client->setRun(true);
-        std::vector<GameTask::GameTaskParam> params = convertTaskParam(tasksJsonStr);
-        thread th(&FzManager::taskFunc, this, client, params);
+        GameTask::GameTaskBundle bundle = convertTaskBundle(tasksJsonStr);
+        thread th(&FzManager::taskFunc, this, client, bundle);
         th.detach();
         return true;
     }
     return false;
 }
 
-std::vector<GameTask::GameTaskParam> FzManager::convertTaskParam(const std::string &tasksJsonStr) {
+GameTask::GameTaskBundle FzManager::convertTaskBundle(const std::string &tasksJsonStr) {
     Json::Value jsonValue;
     std::vector<GameTask::GameTaskParam> taskParams;
     if (this->jsonConvert->convert(tasksJsonStr, &jsonValue)) {
@@ -98,28 +99,34 @@ std::vector<GameTask::GameTaskParam> FzManager::convertTaskParam(const std::stri
             });
         }
         std::sort(taskParams.begin(), taskParams.end());
+        std::string groupName = jsonValue["groupName"].asString();
+        int cycles = jsonValue["cycles"].asInt();
         for (auto &taskParam : taskParams) {
             printf("Task -> %d %s\n", taskParam.order, taskParam.taskName.c_str());
         }
+        return GameTask::GameTaskBundle{cycles, groupName, taskParams};
     }
-    return taskParams;
+    return GameTask::GameTaskBundle{0, "", taskParams};
 }
 
-void FzManager::taskFunc(GameClient *client, std::vector<GameTask::GameTaskParam> &gameTaskParams) {
+void FzManager::taskFunc(GameClient *client, GameTask::GameTaskBundle &taskBundle) {
     GameTask *commonTask = this->gameTaskManager->newTask("Common", "{}", client, this->compareManager);
-    for (auto &gtp : gameTaskParams) {
-        GameTask *task = this->gameTaskManager->newTask(move(gtp.taskName), gtp.configJson, client,
-                                                        this->compareManager);
-        if (task != nullptr) {
-            std::vector<int> taskIds;
-            for (int i = 0; i < 30; i++) {
+    // 设置组
+    client->setCurrentGroup(taskBundle.groupName);
+    for (int i = 0; i < taskBundle.cycles; i++) {
+        for (auto &gtp : taskBundle.taskParams) {
+            GameTask *task = this->gameTaskManager->newTask(move(gtp.taskName), gtp.configJson, client,
+                                                            this->compareManager);
+            if (task != nullptr) {
+                std::vector<int> taskIds;
                 commonTask->exec(taskIds);
-                task->exec(taskIds);
-                this_thread::sleep_for(chrono::seconds(1));
+                while (task->exec(taskIds)) {
+                    this_thread::sleep_for(chrono::seconds(1));
+                }
+                delete task;
+            } else {
+                printf("invalid task %s\n", gtp.taskName.c_str());
             }
-            delete task;
-        } else {
-            printf("invalid task %s\n", gtp.taskName.c_str());
         }
     }
     delete commonTask;

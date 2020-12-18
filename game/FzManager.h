@@ -37,7 +37,7 @@ private:
 
     int cleanClients(bool cleanAll);
 
-    std::vector<GameTask::GameTaskParam> convertTaskParam(const std::string &tasksJsonStr);
+    GameTask::GameTaskBundle convertTaskBundle(const std::string &tasksJsonStr);
 
-    void taskFunc(GameClient *client, std::vector<GameTask::GameTaskParam> &gameTaskParams);
+    void taskFunc(GameClient *client, GameTask::GameTaskBundle &taskBundle);
 };
