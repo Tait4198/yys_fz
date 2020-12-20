@@ -1,11 +1,11 @@
-#include "YuHunTask.h"
+﻿#include "YuHunTask.h"
 
 YuHunTask::YuHunTask(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager)
         : BaseGameTask(client, compareManager) {
     YuHunTask::initConfig(configJsonStr, [this](auto &&PH1) {
         initConfigCallback(std::forward<decltype(PH1)>(PH1));
     });
-    this->ready = false;
+    this->init = false;
     this->enterLoop = false;
 }
 
@@ -14,36 +14,47 @@ YuHunTask::createInstance(const std::string &configJsonStr, GameClient *client, 
     return new YuHunTask(configJsonStr, client, compareManager);
 }
 
-bool YuHunTask::exec(std::vector<int> &otherClientTaskIds) {
+bool YuHunTask::exec(std::vector<GameClient *> &otherClients) {
     if (this->init) {
-
+        return false;
     } else {
         // 未完成初始化准备
         if (!this->compareManager->backToHome(this->client->getHwnd(), this->client->getHexHwnd())) {
             // 无法退回首页
             return false;
+        } else {
+            // 已返回主页
+            this->client->setCurrentPosition(100);
         }
         // 开启buff
         if (!this->buff.empty()) {
             this->openBuff(this->buff);
         }
-        if (otherClientTaskIds.empty()) {
+        if (otherClients.empty()) {
             // 单人
-            return this->initSingleBattle();
+            if (!this->initSingleBattle()) {
+                return false;
+            }
         } else {
             // 组队
-            return this->initGroupBattle();
+            if (!this->initGroupBattle()) {
+                return false;
+            }
         }
+        this->init = true;
     }
     return true;
 }
 
 void YuHunTask::initConfigCallback(Json::Value *configJson) {
     this->battleCount = configJson->operator[]("battleCount").asInt();
-    Json::Value buffValue = configJson->operator[]("buff");
-    for (const auto &i : buffValue) {
-        this->buff.push_back(i.asInt());
+    if (configJson->isMember("buff")) {
+        Json::Value buffValue = configJson->operator[]("buff");
+        for (const auto &i : buffValue) {
+            this->buff.push_back(i.asInt());
+        }
     }
+
 }
 
 YuHunTask::~YuHunTask() = default;
@@ -62,10 +73,11 @@ bool YuHunTask::initSingleBattle() {
                                             "home_expanded")) {
         // 菜单未展开
     }
+    return true;
 }
 
 bool YuHunTask::initGroupBattle() {
-
+    return true;
 }
 
 

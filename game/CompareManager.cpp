@@ -1,4 +1,4 @@
-#include "CompareManager.h"
+﻿#include "CompareManager.h"
 #include <filesystem>
 #include <fstream>
 #include <chrono>
@@ -69,13 +69,13 @@ CompareResult CompareManager::compare(HWND hwnd, int currentPosition, GameCompar
     }
     std::string hash = getScreenshotPHash(hwnd, cp.x, cp.y, cp.w, cp.h);
     int pv = hammingDistance(hash, cp.hash);
-    printf("N %s C %d H %s\n", cp.name.c_str(), pv, hash.c_str());
+//    printf("N %s C %d H %s\n", cp.name.c_str(), pv, hash.c_str());
     return CompareResult{cp.x, cp.y, cp.w, cp.h, cp.r, pv, cp.name};
 }
 
 bool CompareManager::compareValid(HWND hwnd, int currentPosition, GameCompare &cp) {
     int cpv = compare(hwnd, currentPosition, cp).pv;
-    printf("N %s R %d C %d\n", cp.name.c_str(), cp.r, cpv);
+//    printf("N %s R %d C %d\n", cp.name.c_str(), cp.r, cpv);
     return cpv <= cp.r;
 }
 
@@ -138,13 +138,15 @@ bool CompareManager::backToHome(HWND &hwnd, const std::string &clientName) {
 }
 
 bool CompareManager::checkMain(HWND &hwnd) {
-    return (compareValid(hwnd, -1, cpMap["home_not_expanded"]) ||
-            compareValid(hwnd, -1, cpMap["home_expanded"])) &&
-           compareValid(hwnd, -1, cpMap["buff_01"]);
+    bool flag01 = (compareValid(hwnd, -1, cpMap["home_not_expanded"]) ||
+                   compareValid(hwnd, -1, cpMap["home_expanded"])) &&
+                  compareValid(hwnd, -1, cpMap["buff_01"]);
+    bool flag02 = !this->detectAreaStr(utf8Encode(L"书"), hwnd, 580, 215, 150, 60);
+    return flag01 && flag02;
 }
 
 void CompareManager::checkModal(HWND &hwnd, bool accept,
-                                const std::function<bool(HWND & , bool, CompareManager * )> &callback) {
+                                const std::function<bool(HWND &, bool, CompareManager *)> &callback) {
     CompareResult aCr = compare(hwnd, -1, "accept_02");
     CompareResult rCr = compare(hwnd, -1, "refuse_02");
     if (aCr.pv <= aCr.r && rCr.pv <= rCr.r) {
@@ -159,6 +161,20 @@ void CompareManager::checkModal(HWND &hwnd, bool accept,
     }
 }
 
+bool CompareManager::detectAreaStr(const std::string &matchStr, HWND &hwnd, int x, int y, int w, int h) {
+    cv::Mat zhMat = getScreenshotMat(hwnd, x, y, w, h);
+    std::vector<TextBlock> tbs = this->ocrLite->detect(zhMat);
+    std::stringstream ss;
+    for (auto &tb : tbs) {
+        ss << tb.text;
+    }
+
+    printf("OCR %s -> %s\n", ss.str().c_str(), matchStr.c_str());
+    return ss.str().find(matchStr) != std::string::npos;
+}
+
 CompareManager::~CompareManager() {
     delete this->ocrLite;
 }
+
+

@@ -12,7 +12,7 @@ public:
         std::string groupName;
     };
 
-    std::vector<int> getTaskIdByHexHwnd(const std::string &groupName);
+    std::vector<GameClient *> getClientByHexHwnd(const std::string &groupName);
 
     void registered(GameClient *client, std::string groupName);
 

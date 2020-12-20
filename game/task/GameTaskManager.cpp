@@ -2,6 +2,7 @@
 #include "CommonTask.h"
 #include "YuHunTask.h"
 #include "AcceptBattleTask.h"
+#include "SimpleBattleTask.h"
 
 GameTaskManager::GameTaskManager() {
     this->registerTask();
@@ -13,6 +14,7 @@ void GameTaskManager::registerTask() {
     this->createTaskMap["Common"] = CommonTask::createInstance;
     this->createTaskMap["YuHun"] = YuHunTask::createInstance;
     this->createTaskMap["AcceptBattle"] = AcceptBattleTask::createInstance;
+    this->createTaskMap["SimpleBattle"] = SimpleBattleTask::createInstance;
 }
 
 GameTask *GameTaskManager::newTask(std::string &&taskName, const std::string &configJsonStr,

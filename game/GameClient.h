@@ -13,7 +13,7 @@ public:
 
     ~GameClient();
 
-    HWND getHwnd();
+    HWND &getHwnd();
 
     std::string getHexHwnd();
 
@@ -29,14 +29,20 @@ public:
 
     void setCurrentGroup(std::string newGroup);
 
+    [[nodiscard]] int getClientStatus() const;
+
+    void setClientStatus(int clientStatus);
+
     bool isRun();
 
     void setRun(bool status);
+
 private:
     HWND hwnd;
     std::string hexHwnd;
     std::atomic<bool> run;
 
+    int clientStatus;
     int currentPosition;
     int currentTaskId;
     std::string group;

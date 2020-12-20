@@ -14,7 +14,7 @@ GameTask *AcceptBattleTask::createInstance(const std::string &configJsonStr,
     return new AcceptBattleTask(configJsonStr, client, compareManager);
 }
 
-bool AcceptBattleTask::exec(std::vector<int> &otherClientTaskIds) {
+bool AcceptBattleTask::exec(std::vector<GameClient *> &otherClients) {
     return true;
 }
 

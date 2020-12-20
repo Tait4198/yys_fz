@@ -6,6 +6,7 @@
 #include <set>
 #include <sstream>
 #include "GameUtil.h"
+#include "../common/StringUtils.h"
 
 struct GameCompare {
     int x;

@@ -139,8 +139,23 @@ MouseClick mouseLbClick(const HWND &hWnd, int x, int y) {
     int duration = clickDis(rng);
     this_thread::sleep_for(chrono::milliseconds(duration));
     SendMessage(hWnd, WM_LBUTTONUP, 0, MAKELPARAM(x, y));
-    printf("Mouse Click X %d Y %d Duration %d\n", x, y, duration);
+    printf("[%d] Mouse Click X %d Y %d Duration %d\n", hWnd, x, y, duration);
     return MouseClick{x, y, duration};
+}
+
+std::vector<MouseClick> rangeMouseLbClick(const HWND &hwnd, int sx, int sy, int ex, int ey, int count) {
+    std::vector<MouseClick> mouseClicks;
+    mt19937 rng{dev()};
+    uniform_int_distribution<mt19937::result_type> rx(sx, ex);
+    uniform_int_distribution<mt19937::result_type> ry(sy, ey);
+    uniform_int_distribution<mt19937::result_type> clickDuration(250, 500);
+    int x = rx(rng);
+    int y = ry(rng);
+    for (int i = 0; i < count; i++) {
+        mouseClicks.push_back(mouseLbClick(hwnd, x, y));
+        this_thread::sleep_for(chrono::milliseconds(clickDuration(rng)));
+    }
+    return mouseClicks;
 }
 
 MouseClick rangeMouseLbClick(const HWND &hwnd, int sx, int sy, int ex, int ey) {

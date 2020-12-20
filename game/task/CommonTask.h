@@ -12,7 +12,7 @@ public:
     static GameTask *
     createInstance(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
 
-    bool exec(std::vector<int> &otherClientTaskIds) override;
+    bool exec(std::vector<GameClient *> &otherClients) override;
 
     ~CommonTask() override;
 

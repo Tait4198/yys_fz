@@ -5,8 +5,12 @@ CommonTask::CommonTask(const std::string &configJsonStr, GameClient *client, Com
 
 }
 
-bool CommonTask::exec(std::vector<int> &otherClientTaskIds) {
+bool CommonTask::exec(std::vector<GameClient *> &otherClients) {
     this->offerAReward(false);
+    if (this->compareManager->compareValid(this->client->getHwnd(), this->client->getCurrentPosition(),
+                                           "yuhun_invite_player")) {
+        rangeMouseLbClick(this->client->getHwnd(), 400, 495, 500, 530);
+    }
     return true;
 }
 

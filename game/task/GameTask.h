@@ -20,10 +20,10 @@ public:
     struct GameTaskBundle {
         int cycles;
         std::string groupName;
-        std::vector<GameTaskParam> &taskParams;
+        std::vector<GameTaskParam> taskParams;
     };
 
-    virtual bool exec(std::vector<int> &otherClientTaskIds) = 0;
+    virtual bool exec(std::vector<GameClient *> &otherClients) = 0;
 
     virtual int getGroupTaskId() = 0;
 

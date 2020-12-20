@@ -31,6 +31,8 @@ public:
 
     bool checkMain(HWND &hwnd);
 
+    bool detectAreaStr(const std::string& matchStr, HWND &hwnd, int x, int y, int w, int h);
+
     void checkModal(HWND &hwnd, bool accept, const std::function<bool(HWND &, bool, CompareManager *)> &callback);
 
 private:

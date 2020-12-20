@@ -1,18 +1,18 @@
 #include "GroupManager.h"
 
-std::vector<int> GroupManager::getTaskIdByHexHwnd(const std::string &hwndHex) {
-    std::vector<int> taskIds;
+std::vector<GameClient *> GroupManager::getClientByHexHwnd(const std::string &hwndHex) {
+    std::vector<GameClient *> clients;
     if (this->clientMap.count(hwndHex)) {
         std::string groupName = this->clientMap[hwndHex].groupName;
         for (auto &iter : this->clientMap) {
-            if (!(iter.first == hwndHex) && iter.second.groupName == groupName) {
-                taskIds.push_back(iter.second.client->getCurrentTaskId());
+            if (iter.first != hwndHex && iter.second.groupName == groupName) {
+                clients.push_back(iter.second.client);
             }
         }
     } else {
         printf("Invalid hexHwnd\n");
     }
-    return taskIds;
+    return clients;
 }
 
 void GroupManager::registered(GameClient *client, std::string groupName) {

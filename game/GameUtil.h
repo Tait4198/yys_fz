@@ -32,6 +32,8 @@ int hammingDistance(std::string&, std::string&);
 
 MouseClick mouseLbClick(const HWND&, int, int);
 
+std::vector<MouseClick> rangeMouseLbClick(const HWND &hwnd, int sx, int sy, int ex, int ey, int count);
+
 MouseClick rangeMouseLbClick(const HWND& hwnd, int sx, int sy, int ex, int ey);
 
 std::vector<MouseDrag> mouseDrag(const HWND&, int, int, int, int, bool);

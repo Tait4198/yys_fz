@@ -7,13 +7,14 @@ GameClient::GameClient(HWND hwnd, std::string hexHwnd) {
     this->hexHwnd = std::move(hexHwnd);
     this->currentPosition = -1;
     this->currentTaskId = -1;
+    this->clientStatus = 1;
     this->initClientSize();
 }
 
 GameClient::~GameClient()
 = default;
 
-HWND GameClient::getHwnd() {
+HWND &GameClient::getHwnd() {
     return this->hwnd;
 }
 
@@ -55,6 +56,14 @@ bool GameClient::isRun() {
     return this->run.load();
 }
 
-void GameClient::setRun(bool status) {
-    this->run.store(status);
+void GameClient::setRun(bool newStatus) {
+    this->run.store(newStatus);
+}
+
+int GameClient::getClientStatus() const {
+    return this->clientStatus;
+}
+
+void GameClient::setClientStatus(int newClientStatus) {
+    this->clientStatus = newClientStatus;
 }

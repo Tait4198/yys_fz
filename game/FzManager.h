@@ -28,6 +28,8 @@ public:
 
     CompareResult compare(std::string &&hexHwnd, std::string &&cpName);
 
+    CompareManager *getCompareManager();
+
 private:
     std::map<std::string, GameClient *> clientMap;
     GameTaskManager *gameTaskManager;
