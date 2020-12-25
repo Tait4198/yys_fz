@@ -21,11 +21,17 @@ public:
     int getGroupTaskId() override;
 
 private:
+    std::random_device randomDev;
+
+    bool initCheck;
+    // 是否队长
+    bool isLeader;
+    // 是否开始战斗
+    bool isBattle;
+
     int battleCount{};
     int curBattleCount;
     int battleExecCount;
-    std::random_device randomDev;
-    bool isLeader;
 
     void initConfigCallback(Json::Value *configJson);
 };

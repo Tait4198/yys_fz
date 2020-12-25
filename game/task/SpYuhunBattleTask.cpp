@@ -5,13 +5,15 @@ SpYuhunBattleTask::SpYuhunBattleTask(const std::string &configJsonStr, GameClien
     SpYuhunBattleTask::initConfig(configJsonStr, [this](auto &&PH1) {
         initConfigCallback(std::forward<decltype(PH1)>(PH1));
     });
+    this->initCheck = false;
     this->curBattleCount = 0;
     this->battleExecCount = 0;
     this->isLeader = false;
 }
 
 GameTask *
-SpYuhunBattleTask::createInstance(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager) {
+SpYuhunBattleTask::createInstance(const std::string &configJsonStr, GameClient *client,
+                                  CompareManager *compareManager) {
     return new SpYuhunBattleTask(configJsonStr, client, compareManager);
 }
 
@@ -20,19 +22,47 @@ bool SpYuhunBattleTask::exec(std::vector<GameClient *> &otherClients) {
         printf("本轮战斗结束\n");
         return false;
     }
-    int position = client->getCurrentPosition();
+    if (!initCheck) {
+        this->initCheck = true;
+        // todo 检测是否处于组队页面与是否队长
+    }
     HWND hwnd = client->getHwnd();
-    // 准备监听
-    if (compareManager->compareValid(hwnd, position, "yuhun_leader_ready")) {
-        if (!compareManager->compareValid(hwnd, position, "player_01_not_join")) {
-            CompareLocation readyCl = compareManager->getCompareLocation("yuhun_leader_ready");
-            rangeMouseLbClick(hwnd, readyCl.x, readyCl.y, readyCl.x + readyCl.w, readyCl.y + readyCl.h);
-            this->battleExecCount = 1;
-            this->isLeader = true;
-            this->client->setClientStatus(1);
-            printf("队长第(%d/%d)把御魂开始\n", this->curBattleCount + 1, this->battleCount);
+
+    // 战斗开始检测
+    if (!this->isBattle) {
+        if (this->isLeader) {
+            bool allJoin = true;
+            for (auto gc : otherClients) {
+                if (!gc->getClientStatus()->inRoom) {
+                    allJoin = false;
+                }
+            }
+            if (allJoin && compareManager->compareValid(hwnd, "yuhun_leader_ready")) {
+                CompareLocation readyCl = compareManager->getCompareLocation("yuhun_leader_ready");
+                rangeMouseLbClick(hwnd, readyCl.x, readyCl.y, readyCl.x + readyCl.w, readyCl.y + readyCl.h);
+                for (auto gc : otherClients) {
+                    gc->getClientStatus()->inBattle = true;
+                    gc->getClientStatus()->inRoom = true;
+                }
+                this->battleExecCount = 1;
+                this->isBattle = true;
+                printf("队长第(%d/%d)把御魂开始\n", this->curBattleCount + 1, this->battleCount);
+            }
+        } else {
+            if (this->client->getClientStatus()->inRoom && this->client->getClientStatus()->inBattle) {
+                this->client->getClientStatus()->inRoom = false;
+                this->battleExecCount = 1;
+                this->isBattle = true;
+                printf("队员第(%d/%d)把御魂开始\n", this->curBattleCount + 1, this->battleCount);
+            }
         }
     }
+
+
+    int position = client->getCurrentPosition();
+
+    // 准备监听
+
     if (!this->isLeader && this->battleExecCount == 0) {
         if (!otherClients.empty() && otherClients[0]->getClientStatus()) {
             this->battleExecCount = 1;

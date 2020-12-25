@@ -60,6 +60,6 @@ void GameClient::setRun(bool newStatus) {
     this->run.store(newStatus);
 }
 
-GameClient::ClientStatus &GameClient::getClientStatus() {
-    return this->clientStatus;
+GameClient::ClientStatus *GameClient::getClientStatus() {
+    return &(this->clientStatus);
 }

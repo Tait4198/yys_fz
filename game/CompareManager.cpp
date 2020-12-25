@@ -60,13 +60,14 @@ CompareLocation CompareManager::getCompareLocation(std::string &&cpName) {
 }
 
 CompareResult CompareManager::compare(HWND hwnd, int currentPosition, GameCompare &cp) {
-    if (currentPosition != -1 && cp.position.find(0) == cp.position.end() &&
-        !(cp.position.find(currentPosition) != cp.position.end())) {
-        std::ostringstream ss;
-        std::copy(cp.position.begin(), cp.position.end(), std::ostream_iterator<int>(ss, ","));
-        printf("无效Position: %d -> %s\n", currentPosition, ss.str().c_str());
-        return CompareResult{0, 0, 0, 0, 0, -1, ""};
-    }
+    // 改为半自动辅助暂时去除position检测
+//    if (currentPosition != -1 && cp.position.find(0) == cp.position.end() &&
+//        !(cp.position.find(currentPosition) != cp.position.end())) {
+//        std::ostringstream ss;
+//        std::copy(cp.position.begin(), cp.position.end(), std::ostream_iterator<int>(ss, ","));
+//        printf("无效Position: %d -> %s\n", currentPosition, ss.str().c_str());
+//        return CompareResult{0, 0, 0, 0, 0, -1, ""};
+//    }
     std::string hash = getScreenshotPHash(hwnd, cp.x, cp.y, cp.w, cp.h);
     int pv = hammingDistance(hash, cp.hash);
 //    printf("N %s C %d H %s\n", cp.name.c_str(), pv, hash.c_str());
@@ -146,7 +147,7 @@ bool CompareManager::checkMain(HWND &hwnd) {
 }
 
 void CompareManager::checkModal(HWND &hwnd, bool accept,
-                                const std::function<bool(HWND &, bool, CompareManager *)> &callback) {
+                                const std::function<bool(HWND & , bool, CompareManager * )> &callback) {
     CompareResult aCr = compare(hwnd, -1, "accept_02");
     CompareResult rCr = compare(hwnd, -1, "refuse_02");
     if (aCr.pv <= aCr.r && rCr.pv <= rCr.r) {
@@ -175,6 +176,14 @@ bool CompareManager::detectAreaStr(const std::string &matchStr, HWND &hwnd, int 
 
 CompareManager::~CompareManager() {
     delete this->ocrLite;
+}
+
+CompareResult CompareManager::compare(HWND hwnd, GameCompare &cp) {
+    return compare(hwnd, 0, cp);
+}
+
+bool CompareManager::compareValid(HWND hwnd, GameCompare &cp) {
+    return compareValid(hwnd, 0, cp);
 }
 
 

@@ -8,7 +8,8 @@
 class GameClient {
 public:
     struct ClientStatus {
-        bool joinRoom;
+        bool inRoom;
+        bool inBattle;
     };
 
     GameClient(HWND hwnd, std::string);
@@ -35,7 +36,7 @@ public:
 
     void setRun(bool status);
 
-    ClientStatus& getClientStatus();
+    ClientStatus* getClientStatus();
 
 private:
     HWND hwnd;

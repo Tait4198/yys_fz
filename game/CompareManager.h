@@ -17,6 +17,10 @@ public:
 
     CompareLocation getCompareLocation(std::string &&cpName);
 
+    CompareResult compare(HWND hwnd, GameCompare &cp);
+
+    bool compareValid(HWND hwnd, GameCompare &cp);
+
     CompareResult compare(HWND hwnd, int currentPosition, GameCompare &cp);
 
     bool compareValid(HWND hwnd, int currentPosition, GameCompare &cp);
