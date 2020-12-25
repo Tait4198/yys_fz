@@ -7,7 +7,7 @@ GameClient::GameClient(HWND hwnd, std::string hexHwnd) {
     this->hexHwnd = std::move(hexHwnd);
     this->currentPosition = -1;
     this->currentTaskId = -1;
-    this->clientStatus = 1;
+    this->clientStatus = {};
     this->initClientSize();
 }
 
@@ -60,10 +60,6 @@ void GameClient::setRun(bool newStatus) {
     this->run.store(newStatus);
 }
 
-int GameClient::getClientStatus() const {
+GameClient::ClientStatus &GameClient::getClientStatus() {
     return this->clientStatus;
-}
-
-void GameClient::setClientStatus(int newClientStatus) {
-    this->clientStatus = newClientStatus;
 }

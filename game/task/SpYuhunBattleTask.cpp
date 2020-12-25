@@ -1,8 +1,8 @@
-﻿#include "SimpleBattleTask.h"
+﻿#include "SpYuhunBattleTask.h"
 
-SimpleBattleTask::SimpleBattleTask(const std::string &configJsonStr, GameClient *client,
-                                   CompareManager *compareManager) : BaseGameTask(client, compareManager) {
-    SimpleBattleTask::initConfig(configJsonStr, [this](auto &&PH1) {
+SpYuhunBattleTask::SpYuhunBattleTask(const std::string &configJsonStr, GameClient *client,
+                                     CompareManager *compareManager) : BaseGameTask(client, compareManager) {
+    SpYuhunBattleTask::initConfig(configJsonStr, [this](auto &&PH1) {
         initConfigCallback(std::forward<decltype(PH1)>(PH1));
     });
     this->curBattleCount = 0;
@@ -11,11 +11,11 @@ SimpleBattleTask::SimpleBattleTask(const std::string &configJsonStr, GameClient 
 }
 
 GameTask *
-SimpleBattleTask::createInstance(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager) {
-    return new SimpleBattleTask(configJsonStr, client, compareManager);
+SpYuhunBattleTask::createInstance(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager) {
+    return new SpYuhunBattleTask(configJsonStr, client, compareManager);
 }
 
-bool SimpleBattleTask::exec(std::vector<GameClient *> &otherClients) {
+bool SpYuhunBattleTask::exec(std::vector<GameClient *> &otherClients) {
     if (this->curBattleCount >= this->battleCount) {
         printf("本轮战斗结束\n");
         return false;
@@ -77,16 +77,16 @@ bool SimpleBattleTask::exec(std::vector<GameClient *> &otherClients) {
     return true;
 }
 
-SimpleBattleTask::~SimpleBattleTask() = default;
+SpYuhunBattleTask::~SpYuhunBattleTask() = default;
 
-int SimpleBattleTask::getTaskId() {
+int SpYuhunBattleTask::getTaskId() {
     return 0;
 }
 
-int SimpleBattleTask::getGroupTaskId() {
+int SpYuhunBattleTask::getGroupTaskId() {
     return 0;
 }
 
-void SimpleBattleTask::initConfigCallback(Json::Value *configJson) {
+void SpYuhunBattleTask::initConfigCallback(Json::Value *configJson) {
     this->battleCount = configJson->operator[]("battleCount").asInt();
 }

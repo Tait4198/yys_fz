@@ -1,12 +1,12 @@
-#ifndef YYS_FZ_SIMPLEBATTLETASK_H
-#define YYS_FZ_SIMPLEBATTLETASK_H
+#ifndef YYS_FZ_SPYUHUNBATTLETASK_H
+#define YYS_FZ_SPYUHUNBATTLETASK_H
 
 #include "BaseGameTask.h"
 #include <random>
 
-class SimpleBattleTask : public BaseGameTask {
+class SpYuhunBattleTask : public BaseGameTask {
 public:
-    explicit SimpleBattleTask(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
+    explicit SpYuhunBattleTask(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
 
 public:
     static GameTask *
@@ -14,7 +14,7 @@ public:
 
     bool exec(std::vector<GameClient *> &otherClients) override;
 
-    ~SimpleBattleTask() override;
+    ~SpYuhunBattleTask() override;
 
     int getTaskId() override;
 
@@ -31,4 +31,4 @@ private:
 };
 
 
-#endif //YYS_FZ_SIMPLEBATTLETASK_H
+#endif //YYS_FZ_SPYUHUNBATTLETASK_H
