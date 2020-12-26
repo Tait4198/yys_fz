@@ -174,6 +174,7 @@ bool CompareManager::detectAreaStr(const std::string &matchStr, HWND &hwnd, int 
     return ss.str().find(matchStr) != std::string::npos;
 }
 
+
 CompareManager::~CompareManager() {
     delete this->ocrLite;
 }

@@ -6,11 +6,11 @@ SpYuhunBattleTask::SpYuhunBattleTask(const std::string &configJsonStr, GameClien
         initConfigCallback(std::forward<decltype(PH1)>(PH1));
     });
     this->initCheck = false;
+    this->isLeader = false;
 
     this->currentBattleCount = 0;
     this->battleExecCount = 0;
     this->battleFailExecCount = 0;
-    this->isLeader = false;
 }
 
 GameTask *
@@ -58,7 +58,7 @@ bool SpYuhunBattleTask::exec(std::vector<GameClient *> &otherClients) {
             }
             if (allJoin && compareManager->compareValid(hwnd, "yuhun_leader_ready")) {
                 CompareLocation readyCl = compareManager->getCompareLocation("yuhun_leader_ready");
-                rangeMouseLbClick(hwnd, readyCl.x, readyCl.y, readyCl.x + readyCl.w, readyCl.y + readyCl.h);
+//                rangeMouseLbClick(hwnd, readyCl.x, readyCl.y, readyCl.x + readyCl.w, readyCl.y + readyCl.h);
                 for (auto gc : otherClients) {
                     gc->getClientStatus()->inBattle = true;
                     gc->getClientStatus()->inRoom = true;
@@ -85,6 +85,7 @@ bool SpYuhunBattleTask::exec(std::vector<GameClient *> &otherClients) {
         std::mt19937 rng{this->randomDev()};
         std::uniform_int_distribution<std::mt19937::result_type> dis(1000, 3000);
         std::uniform_int_distribution<std::mt19937::result_type> disClick(1, 3);
+
         if (compareManager->compareValid(hwnd, "yuhun_leader_end_01") ||
             compareManager->compareValid(hwnd, "yuhun_player_end_01") ||
             compareManager->compareValid(hwnd, "yuhun_player_end_02")) {
@@ -120,6 +121,7 @@ bool SpYuhunBattleTask::exec(std::vector<GameClient *> &otherClients) {
     }
     return true;
 }
+
 
 SpYuhunBattleTask::~SpYuhunBattleTask() = default;
 

@@ -1,20 +1,19 @@
-#ifndef YYS_FZ_SPYUHUNBATTLETASK_H
-#define YYS_FZ_SPYUHUNBATTLETASK_H
+#ifndef YYS_FZ_SPTUPOBATTLETASK_H
+#define YYS_FZ_SPTUPOBATTLETASK_H
 
 #include "BaseGameTask.h"
 #include <random>
 
-class SpYuhunBattleTask : public BaseGameTask {
+class SpTupoBattleTask : public BaseGameTask {
 public:
-    explicit SpYuhunBattleTask(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
-
+    explicit SpTupoBattleTask(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
 public:
     static GameTask *
     createInstance(const std::string &configJsonStr, GameClient *client, CompareManager *compareManager);
 
     bool exec(std::vector<GameClient *> &otherClients) override;
 
-    ~SpYuhunBattleTask() override;
+    ~SpTupoBattleTask() override;
 
     int getTaskId() override;
 
@@ -24,17 +23,16 @@ private:
     std::random_device randomDev;
 
     bool initCheck;
-    // 是否队长
-    bool isLeader;
+    int currentBattleCount;
 
     int battleCount{};
 
-    int currentBattleCount;
-    int battleExecCount;
-    int battleFailExecCount;
-
     void initConfigCallback(Json::Value *configJson);
+
+    int getRemainingTupoSize();
+
+    static void setClickXY(std::vector<cv::Point> &points, int *sx, int *sy, int *ex, int *ey);
 };
 
 
-#endif //YYS_FZ_SPYUHUNBATTLETASK_H
+#endif //YYS_FZ_SPTUPOBATTLETASK_H
