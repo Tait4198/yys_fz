@@ -32,20 +32,9 @@ bool SpTupoBattleTask::exec(std::vector<GameClient *> &otherClients) {
         }
     }
     // 等待获取突破券数量
-    int retryIndex = 0;
-    while (true) {
-        int tpSize = getRemainingTupoSize();
-        if (tpSize == -1) {
-            if (retryIndex++ > 5) {
-                return false;
-            }
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        } else if (tpSize == 0) {
-            printf("没有可用的突破券\n");
-            return false;
-        } else {
-            break;
-        }
+    if (getRemainingTupoSize() == 0) {
+        printf("没有可用的突破券\n");
+        return false;
     }
 
     bool battleStart = false;
@@ -75,8 +64,13 @@ bool SpTupoBattleTask::exec(std::vector<GameClient *> &otherClients) {
 
     if (battleStart) {
         printf("突破战斗开始\n");
+        int waitBattleIndex = 0;
         while (!this->compareManager->compareValid(hwnd, "tupo_back")) {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            // 超过10秒未检测进入战斗
+            if (waitBattleIndex++ > 2 * 10) {
+                return true;
+            }
         }
         // 标记最左
         // todo 标记校验

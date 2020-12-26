@@ -58,7 +58,7 @@ bool SpYuhunBattleTask::exec(std::vector<GameClient *> &otherClients) {
             }
             if (allJoin && compareManager->compareValid(hwnd, "yuhun_leader_ready")) {
                 CompareLocation readyCl = compareManager->getCompareLocation("yuhun_leader_ready");
-//                rangeMouseLbClick(hwnd, readyCl.x, readyCl.y, readyCl.x + readyCl.w, readyCl.y + readyCl.h);
+                rangeMouseLbClick(hwnd, readyCl.x, readyCl.y, readyCl.x + readyCl.w, readyCl.y + readyCl.h);
                 for (auto gc : otherClients) {
                     gc->getClientStatus()->inBattle = true;
                     gc->getClientStatus()->inRoom = true;
