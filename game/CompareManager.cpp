@@ -147,7 +147,7 @@ bool CompareManager::checkMain(HWND &hwnd) {
 }
 
 void CompareManager::checkModal(HWND &hwnd, bool accept,
-                                const std::function<bool(HWND & , bool, CompareManager * )> &callback) {
+                                const std::function<bool(HWND &, bool, CompareManager *)> &callback) {
     CompareResult aCr = compare(hwnd, -1, "accept_02");
     CompareResult rCr = compare(hwnd, -1, "refuse_02");
     if (aCr.pv <= aCr.r && rCr.pv <= rCr.r) {
@@ -178,12 +178,12 @@ CompareManager::~CompareManager() {
     delete this->ocrLite;
 }
 
-CompareResult CompareManager::compare(HWND hwnd, GameCompare &cp) {
-    return compare(hwnd, 0, cp);
+CompareResult CompareManager::compare(HWND hwnd, std::string &&cpName) {
+    return compare(hwnd, 0, std::move(cpName));
 }
 
-bool CompareManager::compareValid(HWND hwnd, GameCompare &cp) {
-    return compareValid(hwnd, 0, cp);
+bool CompareManager::compareValid(HWND hwnd, std::string &&cpName) {
+    return compareValid(hwnd, 0, std::move(cpName));
 }
 
 

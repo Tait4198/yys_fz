@@ -10,7 +10,7 @@ void BaseGameTask::initConfig(const std::string &configJsonStr, const std::funct
     if (success && errs.empty()) {
         callback(&configJson);
     } else {
-        printf("task init fail");
+        printf("task init fail\n");
     }
     delete reader;
 }

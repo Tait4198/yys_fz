@@ -26,12 +26,11 @@ private:
     bool initCheck;
     // 是否队长
     bool isLeader;
-    // 是否开始战斗
-    bool isBattle;
 
     int battleCount{};
-    int curBattleCount;
+    int currentBattleCount;
     int battleExecCount;
+    int battleFailExecCount;
 
     void initConfigCallback(Json::Value *configJson);
 };

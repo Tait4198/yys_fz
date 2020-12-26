@@ -108,10 +108,11 @@ GameTask::GameTaskBundle FzManager::convertTaskBundle(const std::string &tasksJs
 void FzManager::taskFunc(GameClient *client, GameTask::GameTaskBundle &taskBundle) {
     printf("[%s] Task Start\n", client->getHexHwnd().c_str());
     GameTask *commonTask = this->gameTaskManager->newTask("Common", "{}", client, this->compareManager);
-    // 设置组
-    client->setCurrentGroup(taskBundle.groupName);
     // 注册组
+    client->setCurrentGroup(taskBundle.groupName);
     groupManager->registered(client, taskBundle.groupName);
+    this_thread::sleep_for(chrono::milliseconds(500));
+
     for (int i = 0; i < taskBundle.cycles; i++) {
         for (auto &gtp : taskBundle.taskParams) {
             GameTask *task = this->gameTaskManager->newTask(move(gtp.taskName), gtp.configJson, client,
@@ -132,6 +133,9 @@ void FzManager::taskFunc(GameClient *client, GameTask::GameTaskBundle &taskBundl
         }
     }
     delete commonTask;
+    // 解除组
+    client->setCurrentGroup("");
+    groupManager->unregister(client->getHexHwnd());
     client->setRun(false);
     printf("[%s] Task End\n", client->getHexHwnd().c_str());
 }

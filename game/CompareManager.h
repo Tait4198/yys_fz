@@ -17,9 +17,9 @@ public:
 
     CompareLocation getCompareLocation(std::string &&cpName);
 
-    CompareResult compare(HWND hwnd, GameCompare &cp);
+    CompareResult compare(HWND hwnd, std::string &&cpName);
 
-    bool compareValid(HWND hwnd, GameCompare &cp);
+    bool compareValid(HWND hwnd, std::string &&cpName);
 
     CompareResult compare(HWND hwnd, int currentPosition, GameCompare &cp);
 
@@ -35,7 +35,7 @@ public:
 
     bool checkMain(HWND &hwnd);
 
-    bool detectAreaStr(const std::string& matchStr, HWND &hwnd, int x, int y, int w, int h);
+    bool detectAreaStr(const std::string &matchStr, HWND &hwnd, int x, int y, int w, int h);
 
     void checkModal(HWND &hwnd, bool accept, const std::function<bool(HWND &, bool, CompareManager *)> &callback);
 
