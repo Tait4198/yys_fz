@@ -24,6 +24,8 @@ private:
 
     bool initCheck;
     int currentBattleCount;
+    // 突破券数量
+    int currentTupoCount;
 
     int battleCount{};
 

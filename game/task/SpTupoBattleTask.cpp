@@ -9,6 +9,7 @@ SpTupoBattleTask::SpTupoBattleTask(const std::string &configJsonStr, GameClient 
     this->initCheck = false;
 
     this->currentBattleCount = 0;
+    this->currentTupoCount = 0;
 }
 
 GameTask *
@@ -21,6 +22,9 @@ bool SpTupoBattleTask::exec(std::vector<GameClient *> &otherClients) {
         printf("本轮战斗结束\n");
         return false;
     }
+    if (this->currentTupoCount <= 0) {
+        printf("没有可用的突破券\n");
+    }
 
     HWND hwnd = client->getHwnd();
     if (!initCheck) {
@@ -30,11 +34,11 @@ bool SpTupoBattleTask::exec(std::vector<GameClient *> &otherClients) {
             printf("未处于突破界面\n");
             return false;
         }
-    }
-    // 等待获取突破券数量
-    if (getRemainingTupoSize() == 0) {
-        printf("没有可用的突破券\n");
-        return false;
+        this->currentTupoCount = getRemainingTupoSize();
+        // 获取突破券数量
+        if (this->currentTupoCount == 0) {
+            return false;
+        }
     }
 
     bool battleStart = false;
@@ -53,6 +57,7 @@ bool SpTupoBattleTask::exec(std::vector<GameClient *> &otherClients) {
                         setClickXY(tb.boxPoint, &sx, &sy, &ex, &ey);
                         printf("进攻按钮位置 %d %d %d %d\n", sx, sy, ex, ey);
                         rangeMouseLbClick(hwnd, sx, sy, ex, ey);
+                        // todo 检测是否进入战斗
                         battleStart = true;
                         break;
                     }
@@ -88,6 +93,10 @@ bool SpTupoBattleTask::exec(std::vector<GameClient *> &otherClients) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1500));
                 rangeMouseLbClick(hwnd, 1055, 450, 1130, 600, disClick(rng));
                 std::this_thread::sleep_for(std::chrono::milliseconds(dis(rng)));
+
+                // todo 判断战斗是否胜利
+                this->currentTupoCount--;
+
                 break;
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
