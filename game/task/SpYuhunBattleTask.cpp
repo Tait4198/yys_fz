@@ -109,7 +109,7 @@ bool SpYuhunBattleTask::exec(std::vector<GameClient *> &otherClients) {
             this->client->getClientStatus()->inBattle = false;
         }
     }
-    if (this->battleExecCount > 75) {
+    if (this->battleExecCount > 120) {
         rangeMouseLbClick(hwnd, 950, 370, 1120, 600);
         std::this_thread::sleep_for(std::chrono::seconds(3));
         if (this->battleFailExecCount++ > 3) {

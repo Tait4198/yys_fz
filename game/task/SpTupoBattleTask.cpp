@@ -30,7 +30,8 @@ bool SpTupoBattleTask::exec(std::vector<GameClient *> &otherClients) {
     if (!initCheck) {
         this->initCheck = true;
         // 检测是否在突破界面
-        if (!this->compareManager->compareValid(hwnd, "tupo_in_room")) {
+        if (!this->compareManager->compareValid(hwnd, "tupo_in_room") &&
+            !this->compareManager->compareValid(hwnd, "tupo_in_room_guatai")) {
             printf("未处于突破界面\n");
             return false;
         }
@@ -57,7 +58,6 @@ bool SpTupoBattleTask::exec(std::vector<GameClient *> &otherClients) {
                         setClickXY(tb.boxPoint, &sx, &sy, &ex, &ey);
                         printf("进攻按钮位置 %d %d %d %d\n", sx, sy, ex, ey);
                         rangeMouseLbClick(hwnd, sx, sy, ex, ey);
-                        // todo 检测是否进入战斗
                         battleStart = true;
                         break;
                     }
@@ -93,16 +93,13 @@ bool SpTupoBattleTask::exec(std::vector<GameClient *> &otherClients) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1500));
                 rangeMouseLbClick(hwnd, 1055, 450, 1130, 600, disClick(rng));
                 std::this_thread::sleep_for(std::chrono::milliseconds(dis(rng)));
-
-                // todo 判断战斗是否胜利
-                this->currentTupoCount--;
-
                 break;
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
         // 等待返回突破选择页面
-        while (!this->compareManager->compareValid(hwnd, "tupo_in_room")) {
+        while (!this->compareManager->compareValid(hwnd, "tupo_in_room") &&
+               !this->compareManager->compareValid(hwnd, "tupo_in_room_guatai")) {
             rangeMouseLbClick(hwnd, 1055, 450, 1130, 600, disClick(rng));
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
